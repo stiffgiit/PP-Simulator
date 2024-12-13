@@ -1,87 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Simulator;
-
-public abstract class Creature
+﻿namespace Simulator
 {
-    private string _name = "Unknown";
-    private int _level = 1;
-
-    public string Name
+    public abstract class Creature
     {
-        get => _name;
-        set
+        private string name = "Unknown";
+
+        public string Name
         {
-            string trimmedName = value?.Trim();
-            if (trimmedName?.Length < 3)
-            {
-                trimmedName = trimmedName?.PadRight(3, '#');
-            }
+            get => name;
+            init => name = Validator.Shortener(FormatName(value), 3, 25, '#');
+        }
 
-            if (trimmedName?.Length > 25)
-            {
-                trimmedName = trimmedName.Substring(0, 25).TrimEnd();
-                if (trimmedName.Length < 3)
-                {
-                    trimmedName = trimmedName?.PadRight(3, '#');
-                }
-            }
+        private int level = 1;
+      
+        public int Level
+        {
+            get => level;
+            init => level = Validator.Limiter(value, 1, 10);
+        }
 
-            if (trimmedName != null && trimmedName.Length >= 3)
+ 
+        public Creature(string name, int level = 1)
+        {
+            Name = name;
+            Level = level;
+        }
+
+        public Creature() { }
+
+      
+        public abstract int Power { get; }
+        public abstract string Info { get; }
+        public abstract void SayHi();
+
+        
+        public void Upgrade()
+        {
+            if (Level < 10)
             {
-                _name = char.ToUpper(trimmedName[0]) + trimmedName.Substring(1);
+                level++;
             }
         }
-    }
 
-    public int Level
-    {
-        get => _level;
-        set
+     
+        public void Go(Direction direction) => Console.WriteLine($"{Name} goes {direction}");
+
+        public void Go(Direction[] directions)
         {
-            if (value < 1) _level = 1;
-            else if (value > 10) _level = 10;
-            else _level = value;
+            foreach (var direction in directions)
+            {
+                Go(direction);
+            }
+        }
+
+        public void Go(string directions)
+        {
+            Go(DirectionParser.Parse(directions));
+        }
+
+        
+        public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
+
+   
+        protected string FormatName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+            return char.ToUpper(name[0]) + name.Substring(1).ToLower();
         }
     }
-
-    public Creature(string name = "Unknown", int level = 1)
-    {
-        Name = name;
-        Level = level;
-    }
-
-    public Creature()
-    {
-    }
-
-    public abstract void SayHi(); // Metoda abstrakcyjna
-
-    public abstract int Power { get; } // Właściwość abstrakcyjna
-
-    public void Go(Direction direction)
-    {
-        string directionText = direction.ToString().ToLower();
-        Console.WriteLine($"{Name} goes {directionText}.");
-    }
-
-    public void Go(Direction[] directions)
-    {
-        foreach (var direction in directions)
-        {
-            Go(direction);
-        }
-    }
-
-    public void Go(string input)
-    {
-        var directions = DirectionParser.Parse(input);
-        Go(directions);
-    }
-
-    public abstract string Info { get; } // Właściwość abstrakcyjna
 }

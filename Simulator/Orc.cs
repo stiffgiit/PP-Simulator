@@ -1,43 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Simulator;
-
+﻿namespace Simulator;
 public class Orc : Creature
 {
-    private int _rage;
-    private int _huntCount;
+    private int rage = 1;
+    private int huntCounter = 0;
 
     public int Rage
     {
-        get => _rage;
-        set => _rage = Math.Clamp(value, 0, 10);
+        get => rage;
+        init => rage = Validator.Limiter(value, 0, 10);
     }
 
-    public Orc(string name = "Unknown", int level = 1, int rage = 0) : base(name, level)
+    public Orc(string name, int level, int rage) : base(name, level)
     {
         Rage = rage;
     }
 
-    public Orc() : base()
-    {
-    }
-
-    public override int Power => Level * 7 + Rage * 3;
+    public Orc() { }
 
     public void Hunt()
     {
-        _huntCount++;
-        if (_huntCount % 2 == 0)
+        Console.WriteLine($"{Name} is hunting.");
+        huntCounter++;
+
+        if (huntCounter % 2 == 0 && rage < 10)
         {
-            Rage++;
+            rage++;
         }
     }
 
-    public override void SayHi() => Console.WriteLine($"Hi, I'm an Orc named {Name}, Level {Level}, Rage {Rage}.");
+    public override void SayHi() => Console.WriteLine(
+        $"I'm {Name}, my level is {Level}, my rage is {Rage}."
+    );
+
+    public override int Power => 7 * Level + 3 * Rage;
 
     public override string Info => $"{Name} [{Level}][{Rage}]";
 }

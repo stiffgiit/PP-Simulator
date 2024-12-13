@@ -1,49 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Simulator;
-
-public class Animals
+﻿namespace Simulator
 {
-    private string _description = "Unknown"; 
-    public uint Size { get; set; } = 3;
-
-    public string Description
+    public class Animals
     {
-        get => _description;
-        set
+        private string description = "Unknown";
+        public uint Size { get; set; } = 3;
+
+       
+        public virtual string Info => $"{FormatName(Description)} <{Size}>";
+
+        public string Description
         {
-            
-            string trimmedDescription = value?.Trim(); 
-            if (trimmedDescription?.Length < 3)
-            {
-                trimmedDescription = trimmedDescription?.PadRight(3, '#'); 
-            }
+            get => description;
+            init => description = Validator.Shortener(value, 3, 15, '#');
+        }
 
-            if (trimmedDescription?.Length > 15)
-            {
-                trimmedDescription = trimmedDescription.Substring(0, 15).TrimEnd(); 
-                if (trimmedDescription.Length < 3)
-                {
-                    trimmedDescription = trimmedDescription?.PadRight(3, '#'); 
-                }
-            }
+       
+        public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
 
-            _description = trimmedDescription ?? "Unknown"; 
+      
+        protected string FormatName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+
+            return char.ToUpper(name.Trim()[0]) + name.Trim().Substring(1).ToLower();
         }
     }
-
-    
-    public Animals(string description = "Unknown", uint size = 3)
-    {
-        Description = description;
-        Size = size;
-    }
-
-    
-    public string Info => $"{Description} <{Size}>";
 }
-
