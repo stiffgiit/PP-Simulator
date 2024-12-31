@@ -1,4 +1,5 @@
 ﻿using Simulator;
+using Simulator.Maps;
 
 namespace Simulator;
 
@@ -10,6 +11,7 @@ internal class Program
         //Lab4a();
         //Lab4b();
         Lab5a();
+        Lab5b();
        
     }
     /*
@@ -84,6 +86,24 @@ internal class Program
             Console.WriteLine($"Error: {e.Message}");
         }
     }
-    
+
+    public static void Lab5b()
+    {
+        try
+        {
+            SmallSquareMap map = new SmallSquareMap(10);
+            Point p = new Point(0, 0);
+
+            Console.WriteLine(map.Exist(p)); // true
+            Console.WriteLine(map.Next(p, Direction.Right)); // (1, 0)
+            Console.WriteLine(map.NextDiagonal(p, Direction.Right)); // (1, -1)
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+        }
+    }
+
+
 
 }
