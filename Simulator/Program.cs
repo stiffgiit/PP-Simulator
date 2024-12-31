@@ -1,14 +1,18 @@
-﻿namespace Simulator;
+﻿using Simulator;
+
+namespace Simulator;
 
 internal class Program
 {
     static void Main(string[] args)
     {
         Console.WriteLine("Starting Simulator!\n");
-        Lab4a();
-        Lab4b();
+        //Lab4a();
+        //Lab4b();
+        Lab5a();
+       
     }
-
+    /*
     static void Lab4a()
     {
         Console.WriteLine("HUNT TEST\n");
@@ -59,5 +63,27 @@ internal class Program
             ELF: E## [10][0]
             ORC: Morgash [6][4]
         */
+    
+    
+
+    public static void Lab5a()
+    {
+        try
+        {
+            Rectangle rect = new Rectangle(10, 5, 15, 10);
+            Console.WriteLine(rect);
+
+            Point p = new Point(12, 7);
+            Console.WriteLine($"Contains {p}: {rect.Contains(p)}");
+
+            Point outside = new Point(20, 20);
+            Console.WriteLine($"Contains {outside}: {rect.Contains(outside)}");
+        }
+        catch (ArgumentException e)
+        {
+            Console.WriteLine($"Error: {e.Message}");
+        }
     }
+    
+
 }
