@@ -30,7 +30,8 @@
       
         public abstract int Power { get; }
         public abstract string Info { get; }
-        public abstract void SayHi();
+        //public abstract void SayHi();
+        public abstract string Greeting();
 
         
         public void Upgrade()
@@ -42,20 +43,15 @@
         }
 
      
-        public void Go(Direction direction) => Console.WriteLine($"{Name} goes {direction}");
+        public string Go(Direction direction) => $"{Name} goes {direction}";
 
-        public void Go(Direction[] directions)
-        {
-            foreach (var direction in directions)
-            {
-                Go(direction);
-            }
-        }
+        public string[] Go(Direction[] directions) => directions.Select(direction => Go(direction)).ToArray();
+        
+            
+        
 
-        public void Go(string directions)
-        {
-            Go(DirectionParser.Parse(directions));
-        }
+        public string[] Go(string directions) => Go(DirectionParser.Parse(directions));
+        
 
         
         public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";

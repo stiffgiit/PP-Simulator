@@ -12,7 +12,7 @@ internal class Program
         //Lab4b();
         Lab5a();
         Lab5b();
-       
+
     }
     /*
     static void Lab4a()
@@ -65,8 +65,8 @@ internal class Program
             ELF: E## [10][0]
             ORC: Morgash [6][4]
         */
-    
-    
+
+
 
     public static void Lab5a()
     {
