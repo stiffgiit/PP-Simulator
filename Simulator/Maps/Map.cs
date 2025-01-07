@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simulator;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,35 +7,45 @@ using System.Threading.Tasks;
 
 namespace Simulator.Maps
 {
-  
-
     /// <summary>
-    /// Map of points.
+    /// Map of points with defined boundaries.
     /// </summary>
     public abstract class Map
     {
+        public int SizeX { get; }
+        public int SizeY { get; }
+
         /// <summary>
-        /// Check if give point belongs to the map.
+        /// Constructor for a map with defined size.
         /// </summary>
-        /// <param name="p">Point to check.</param>
-        /// <returns></returns>
+        /// <param name="sizeX">Width of the map.</param>
+        /// <param name="sizeY">Height of the map.</param>
+        protected Map(int sizeX, int sizeY)
+        {
+            if (sizeX < 5 || sizeY < 5)
+                throw new ArgumentOutOfRangeException("size", "Rozmiar mapy musi być w przedziale od 5 do 20.");
+
+            SizeX = sizeX;
+            SizeY = sizeY;
+        }
+
+        /// <summary>
+        /// Check if the given point exists within the map boundaries.
+        /// </summary>
         public abstract bool Exist(Point p);
 
         /// <summary>
-        /// Next position to the point in a given direction.
+        /// Get the next position in the given direction.
         /// </summary>
-        /// <param name="p">Starting point.</param>
-        /// <param name="d">Direction.</param>
-        /// <returns>Next point.</returns>
         public abstract Point Next(Point p, Direction d);
 
         /// <summary>
-        /// Next diagonal position to the point in a given direction 
-        /// rotated 45 degrees clockwise.
+        /// Get the next diagonal position in the given direction.
         /// </summary>
-        /// <param name="p">Starting point.</param>
-        /// <param name="d">Direction.</param>
-        /// <returns>Next point.</returns>
         public abstract Point NextDiagonal(Point p, Direction d);
     }
 }
+
+
+
+

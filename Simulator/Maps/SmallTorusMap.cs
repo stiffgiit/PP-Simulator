@@ -7,17 +7,23 @@ namespace Simulator.Maps
         public int Size { get; }
         private readonly Rectangle _map;
 
-        public SmallTorusMap(int size)
+        public SmallTorusMap(int size) : base(size, size)  // Przekazujemy sizeX i sizeY do klasy bazowej
         {
-            if (size is < 5 or > 20)
+
+            if (size is < 5 || size > 20)
             {
                 throw new ArgumentOutOfRangeException(nameof(size), "Rozmiar mapy musi być w przedziale od 5 do 20.");
             }
+
             Size = size;
-            _map = new Rectangle(0, 0, Size - 1, Size - 1);
+            _map = new Rectangle(0, 0, Size - 1, Size - 1);  // Zmieniamy wymiary prostokąta, uwzględniając torusową mapę
         }
 
-        public override bool Exist(Point point) => _map.Contains(point);
+        public override bool Exist(Point point)
+        {
+            // Zmieniamy metodę, aby poprawnie obsługiwała torusowe współrzędne
+            return point.X >= 0 && point.X < Size && point.Y >= 0 && point.Y < Size;
+        }
 
         public override Point Next(Point point, Direction direction)
         {

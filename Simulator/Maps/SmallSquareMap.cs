@@ -11,6 +11,7 @@ namespace Simulator.Maps
         public int Size { get; }
 
         public SmallSquareMap(int size)
+            : base(Math.Min(Math.Max(size, 5), 20), Math.Min(Math.Max(size, 5), 20))  // Ograniczamy wymiary mapy
         {
             if (size < 5 || size > 20)
                 throw new ArgumentOutOfRangeException("Size must be between 5 and 20.");
@@ -25,14 +26,13 @@ namespace Simulator.Maps
         public override Point Next(Point p, Direction d)
         {
             Point next = p.Next(d);
-            return Exist(next) ? next : p;
+            return Exist(next) ? next : p; // Zwraca nowy punkt, jeśli jest w obrębie mapy, w przeciwnym razie zwraca punkt początkowy
         }
 
         public override Point NextDiagonal(Point p, Direction d)
         {
             Point nextDiagonal = p.NextDiagonal(d);
-            return Exist(nextDiagonal) ? nextDiagonal : p;
+            return Exist(nextDiagonal) ? nextDiagonal : p; // Podobnie dla ruchów diagonalnych
         }
     }
 }
-

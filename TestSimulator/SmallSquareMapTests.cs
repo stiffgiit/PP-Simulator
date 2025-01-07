@@ -1,10 +1,7 @@
 ﻿using Simulator.Maps;
 using Simulator;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xunit;
 
 namespace TestSimulator
 {
@@ -22,8 +19,8 @@ namespace TestSimulator
         }
 
         [Theory]
-        [InlineData(4)]
-        [InlineData(21)]
+        [InlineData(4)]  // Niedopuszczalny rozmiar poniżej 5
+        [InlineData(21)] // Niedopuszczalny rozmiar powyżej 20
         public void Constructor_InvalidSize_ShouldThrowArgumentOutOfRangeException(int size)
         {
             // Act & Assert
@@ -31,8 +28,8 @@ namespace TestSimulator
         }
 
         [Theory]
-        [InlineData(2, 3, 10, true)]
-        [InlineData(10, 10, 10, false)]
+        [InlineData(2, 3, 10, true)]  // Punkt wewnątrz mapy
+        [InlineData(10, 10, 10, false)]  // Punkt poza mapą (granica)
         public void Exist_ShouldReturnCorrectValue(int x, int y, int size, bool expected)
         {
             // Arrange
@@ -42,6 +39,38 @@ namespace TestSimulator
             var result = map.Exist(point);
             // Assert
             Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData(5, 5, 10, Direction.Up, 5, 6)]  // Przykład przesunięcia o jeden w górę
+        [InlineData(5, 5, 10, Direction.Down, 5, 4)]  // Przesunięcie w dół
+        [InlineData(5, 5, 10, Direction.Left, 4, 5)]  // Przesunięcie w lewo
+        [InlineData(5, 5, 10, Direction.Right, 6, 5)]  // Przesunięcie w prawo
+        public void Next_ShouldReturnCorrectPosition(int startX, int startY, int size, Direction direction, int expectedX, int expectedY)
+        {
+            // Arrange
+            var map = new SmallSquareMap(size);
+            var point = new Point(startX, startY);
+            // Act
+            var result = map.Next(point, direction);
+            // Assert
+            Assert.Equal(new Point(expectedX, expectedY), result);
+        }
+
+        [Theory]
+        [InlineData(5, 5, 10, Direction.Up, 6, 6)]  // Przykład przesunięcia po skosie
+        [InlineData(5, 5, 10, Direction.Down, 4, 4)]  // Przesunięcie w dół po skosie
+        [InlineData(5, 5, 10, Direction.Left, 4, 6)]  // Przesunięcie w lewo po skosie
+        [InlineData(5, 5, 10, Direction.Right, 6, 4)]  // Przesunięcie w prawo po skosie
+        public void NextDiagonal_ShouldReturnCorrectDiagonalPosition(int startX, int startY, int size, Direction direction, int expectedX, int expectedY)
+        {
+            // Arrange
+            var map = new SmallSquareMap(size);
+            var point = new Point(startX, startY);
+            // Act
+            var result = map.NextDiagonal(point, direction);
+            // Assert
+            Assert.Equal(new Point(expectedX, expectedY), result);
         }
     }
 }
