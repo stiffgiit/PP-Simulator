@@ -11,7 +11,12 @@ namespace Simulator
         Up,
         Right,
         Down,
-        Left
+        Left,
+        UpLeft,
+        UpRight,
+        DownLeft,
+        DownRight,
+
     }
     
 }

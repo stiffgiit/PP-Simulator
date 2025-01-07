@@ -43,6 +43,19 @@ namespace Simulator.Maps
         /// Get the next diagonal position in the given direction.
         /// </summary>
         public abstract Point NextDiagonal(Point p, Direction d);
+
+        
+        public abstract void Add(Creature creature, Point position);
+
+        
+        public abstract void Remove(Creature creature, Point position);
+
+        public abstract void Move(Point from, Point to, Creature creature);
+
+        public abstract List<Creature> At(Point position);
+        public abstract List<Creature> At(int x, int y);
+
+
     }
 }
 
