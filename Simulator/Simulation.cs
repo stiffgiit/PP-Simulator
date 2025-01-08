@@ -66,29 +66,31 @@ namespace Simulator
             if (Finished)
                 throw new InvalidOperationException("Cannot make a turn. Simulation is finished.");
 
-            
             Direction? direction = DirectionParser.Parse(CurrentMoveName).FirstOrDefault();
             var creature = CurrentCreature;
             var currentPosition = creature.Position;
 
-            
+            // Określamy nową pozycję
             var nextPosition = direction.HasValue ? Map.Next(currentPosition, direction.Value) : currentPosition;
 
-            
-            if (direction.HasValue && Map.Exist(nextPosition))
+            // Tylko wykonaj ruch, jeśli stwór się przemieścił
+            if (direction.HasValue && Map.Exist(nextPosition) && nextPosition != currentPosition)
             {
-                Map.Move(currentPosition, nextPosition, creature);
-                creature.SetMap(Map, nextPosition); 
+                Map.Move(currentPosition, nextPosition, creature);  // Przemieszczamy stwora
+                creature.SetMap(Map, nextPosition);  // Aktualizujemy pozycję w stwórze
             }
 
-            
+            // Zwiększamy licznik ruchów
             _totalMovesMade++;
             _currentTurnIndex = (_currentTurnIndex + 1) % Creatures.Count;
 
+            // Sprawdzamy, czy zakończyliśmy symulację
             if (_totalMovesMade >= Moves.Length)
             {
                 Finished = true;
             }
         }
+
+
     }
 }
