@@ -3,8 +3,6 @@ using Simulator.Maps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Simulator
 {
@@ -15,8 +13,8 @@ namespace Simulator
         public List<Point> Positions { get; }
         public string Moves { get; }
 
-        private int _currentTurnIndex = 0; 
-        private int _totalMovesMade = 0;  
+        private int _currentTurnIndex = 0;
+        private int _totalMovesMade = 0;
 
         public bool Finished { get; private set; } = false;
 
@@ -53,7 +51,6 @@ namespace Simulator
             Positions = new List<Point>(positions);
             Moves = moves.ToLower();
 
-            
             for (int i = 0; i < Creatures.Count; i++)
             {
                 Creatures[i].SetMap(map, positions[i]);
@@ -90,7 +87,5 @@ namespace Simulator
                 Finished = true;
             }
         }
-
-
     }
 }

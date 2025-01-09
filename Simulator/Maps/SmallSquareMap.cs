@@ -1,18 +1,19 @@
-﻿using Simulator.Maps;
-using Simulator;
+﻿using Simulator;
+using Simulator.Maps;
+using System;
+using System.Collections.Generic;
 
 public class SmallSquareMap : Map
 {
-    private readonly Dictionary<Point, List<Creature>> _creaturesOnMap = new();
+    private readonly Dictionary<Point, List<IMappable>> _objectsOnMap = new();
 
     public SmallSquareMap(int size)
-        : base(Math.Min(Math.Max(size, 5), 20), Math.Min(Math.Max(size, 5), 20))  
+        : base(Math.Min(Math.Max(size, 5), 20), Math.Min(Math.Max(size, 5), 20))
     {
         if (size < 5 || size > 20)
             throw new ArgumentOutOfRangeException("Size must be between 5 and 20.");
         Size = size;
     }
-
 
     public int Size { get; }
 
@@ -24,54 +25,53 @@ public class SmallSquareMap : Map
     public override Point Next(Point p, Direction d)
     {
         Point next = p.Next(d);
-        return Exist(next) ? next : p; 
+        return Exist(next) ? next : p;
     }
 
     public override Point NextDiagonal(Point p, Direction d)
     {
         Point nextDiagonal = p.NextDiagonal(d);
-        return Exist(nextDiagonal) ? nextDiagonal : p; 
+        return Exist(nextDiagonal) ? nextDiagonal : p;
     }
 
-    public override void Add(Creature creature, Point position)
+    public override void Add(IMappable obj, Point position)
     {
         if (!Exist(position))
             throw new ArgumentOutOfRangeException(nameof(position), "Point is out of map bounds.");
 
-        if (!_creaturesOnMap.ContainsKey(position))
+        if (!_objectsOnMap.ContainsKey(position))
         {
-            _creaturesOnMap[position] = new List<Creature>();
+            _objectsOnMap[position] = new List<IMappable>();
         }
 
-        _creaturesOnMap[position].Add(creature);
+        _objectsOnMap[position].Add(obj);
     }
 
-    public override void Remove(Creature creature, Point position)
+    public override void Remove(IMappable obj, Point position)
     {
-        if (_creaturesOnMap.ContainsKey(position))
+        if (_objectsOnMap.ContainsKey(position))
         {
-            _creaturesOnMap[position].Remove(creature);
+            _objectsOnMap[position].Remove(obj);
         }
     }
 
-    public override void Move(Point from, Point to, Creature creature)
+    public override void Move(Point from, Point to, IMappable obj)
     {
-        if (!_creaturesOnMap.ContainsKey(from) || !_creaturesOnMap[from].Contains(creature))
+        if (!_objectsOnMap.ContainsKey(from) || !_objectsOnMap[from].Contains(obj))
         {
-            throw new InvalidOperationException("Creature not found at the source position.");
+            throw new InvalidOperationException("Object not found at the source position.");
         }
 
-        
-        Remove(creature, from);
-        Add(creature, to);
+        Remove(obj, from);
+        Add(obj, to);
     }
 
-    public override List<Creature> At(Point position)
+    public override List<IMappable> At(Point position)
     {
-        return _creaturesOnMap.ContainsKey(position) ? _creaturesOnMap[position] : new List<Creature>();
+        return _objectsOnMap.ContainsKey(position) ? _objectsOnMap[position] : new List<IMappable>();
     }
 
-    public override List<Creature> At(int x, int y)
+    public override List<IMappable> At(int x, int y)
     {
         return At(new Point(x, y));
     }

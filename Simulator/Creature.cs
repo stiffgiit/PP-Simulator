@@ -1,10 +1,9 @@
 ﻿using Simulator.Maps;
 using System;
-using Simulator;
 
 namespace Simulator
 {
-    public abstract class Creature
+    public abstract class Creature : IMappable
     {
         private string name = "Unknown";
 
@@ -45,21 +44,18 @@ namespace Simulator
             }
         }
 
-        
         public void SetMap(Map map, Point position)
         {
             CurrentMap = map ?? throw new ArgumentNullException(nameof(map));
             Position = position;
-            CurrentMap.Add(this, position); 
+            CurrentMap.Add(this, position);
         }
 
-        
         public void Go(Direction direction)
         {
             if (CurrentMap == null)
                 throw new InvalidOperationException("Creature is not assigned to a map.");
 
-            
             var nextPosition = CurrentMap.Next(Position, direction);
             CurrentMap.Move(Position, nextPosition, this);
             Position = nextPosition;
@@ -74,4 +70,3 @@ namespace Simulator
         }
     }
 }
-
