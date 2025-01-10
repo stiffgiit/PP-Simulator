@@ -66,22 +66,6 @@ public class SmallMap : Map
             case Direction.Right:
                 newX = (point.X + 1) % _sizeX;
                 break;
-            case Direction.UpLeft:
-                newX = (point.X - 1 + _sizeX) % _sizeX;
-                newY = (point.Y + 1) % _sizeY;
-                break;
-            case Direction.UpRight:
-                newX = (point.X + 1) % _sizeX;
-                newY = (point.Y + 1) % _sizeY;
-                break;
-            case Direction.DownLeft:
-                newX = (point.X - 1 + _sizeX) % _sizeX;
-                newY = (point.Y - 1 + _sizeY) % _sizeY;
-                break;
-            case Direction.DownRight:
-                newX = (point.X + 1) % _sizeX;
-                newY = (point.Y - 1 + _sizeY) % _sizeY;
-                break;
             default:
                 throw new ArgumentException("Unknown direction", nameof(direction));
         }

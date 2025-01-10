@@ -32,7 +32,7 @@
             };
         }
 
-        // Nadpisanie Equals
+        
         public override bool Equals(object obj)
         {
             if (obj is Point other)
@@ -42,13 +42,13 @@
             return false;
         }
 
-        // Nadpisanie GetHashCode
+        
         public override int GetHashCode()
         {
             return HashCode.Combine(X, Y);
         }
 
-        // Przeciążenie operatorów porównania
+        
         public static bool operator ==(Point left, Point right) => left.Equals(right);
         public static bool operator !=(Point left, Point right) => !left.Equals(right);
     }

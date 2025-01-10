@@ -11,22 +11,22 @@
         {
             if (string.IsNullOrEmpty(value))
             {
-                value = new string(placeholder, min); // Wypełnienie pustego ciągu
+                value = new string(placeholder, min); 
             }
             else
             {
-                value = value.Trim(); // Usuń spacje na początku i końcu
+                value = value.Trim(); 
                 if (value.Length > max)
                 {
-                    value = value.Substring(0, max); // Przycięcie do maksymalnej długości
+                    value = value.Substring(0, max); 
                 }
                 else if (value.Length < min)
                 {
-                    value = value.PadRight(min, placeholder); // Wypełnienie placeholderem
+                    value = value.PadRight(min, placeholder); 
                 }
             }
 
-            // Konwersja pierwszej litery na wielką
+           
             if (value.Length > 0)
             {
                 value = char.ToUpper(value[0]) + value.Substring(1);

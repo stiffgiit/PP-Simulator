@@ -6,7 +6,7 @@ using Simulator.Maps;
 
 namespace SimConsole
 {
-    class Program
+    class Program : Animals
     {
         static void Main(string[] args)
         {
@@ -15,7 +15,7 @@ namespace SimConsole
             Console.OutputEncoding = Encoding.UTF8;
 
             
-            var map = new SmallSquareMap(5);
+            var map = new SmallTorusMap(8, 6);
 
             if (map == null)
             {
@@ -24,29 +24,35 @@ namespace SimConsole
 
             var creatures = new List<Creature>
             {
-                new Orc("Gorbag", 5, 2),
-                new Elf("Elandor")
+                new Orc("Gorbag", 2, 3),
+                new Elf("Legolas", 2, 3),
+                new Rabbit(),
+                new Eagle(),
+                new Ostrich()
             };
             var points = new List<Point>
             {
                 new Point(2, 2),
-                new Point(3, 1)
+                new Point(3, 1),
+                new Point(4, 1),
+                new Point(1, 2),
+                new Point(2, 3),
             };
-            var moves = "dlrludl";
+            var moves = "lrdulrudrldulru";
 
             
             var simulation = new Simulation(map, creatures, points, moves);
             var mapVisualizer = new MapVisualizer(simulation.Map);
 
             
-            mapVisualizer.Draw(creatures, points);
+            mapVisualizer.Draw(creatures,points);
 
             
             while (!simulation.Finished)
             {
                 simulation.Turn();
-                mapVisualizer.Draw(creatures, points);
-                System.Threading.Thread.Sleep(1000); 
+                mapVisualizer.Draw(creatures,points);
+                System.Threading.Thread.Sleep(2000); 
             }
 
         }

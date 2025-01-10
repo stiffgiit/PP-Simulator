@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Simulator.Maps;
+using Simulator;
 
-namespace Simulator.Maps
+public interface IMappable
 {
-    public interface IMappable
-    {
-       
-        string ToString();
-
-        void SetMap(Map map, Point position);
-    }
+    Map CurrentMap { get; }
+    Point Position { get; }
+    void SetMap(Map map, Point position);
+    string Symbol { get; }
 }

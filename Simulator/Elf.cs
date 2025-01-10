@@ -4,6 +4,8 @@ public class Elf : Creature
     private int agility = 1;
     private int singCounter = 0;
 
+    public override string Symbol => "A";
+
     public int Agility
     {
         get => agility;
@@ -28,10 +30,22 @@ public class Elf : Creature
         }
     }
 
-    public override string Greeting() => 
-        $"I'm {Name}, my level is {Level}, my agility is {Agility}.";
+    //public override string Greeting() => 
+    // $"I'm {Name}, my level is {Level}, my agility is {Agility}.";
 
-    public override int Power => 8 * Level + 2 * Agility;
+    //public override int Power => 8 * Level + 2 * Agility;
 
-    public override string Info => $"{Name} [{Level}][{Agility}]";
+    
+
+    public override void Move(Direction direction)
+    {
+        //throw new NotImplementedException();
+        Console.WriteLine($"{Name} porusza się w kierunku {direction}");
+        if (CurrentMap == null)
+            throw new InvalidOperationException("Creature is not assigned to a map.");
+
+        var nextPosition = CurrentMap.Next(Position, direction);
+        CurrentMap.Move(Position, nextPosition, this);
+        Position = nextPosition;
+    }
 }

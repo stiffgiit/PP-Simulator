@@ -1,12 +1,14 @@
 ﻿using Simulator.Maps;
+using Simulator;
 using System;
 
 namespace Simulator
 {
-    public abstract class Creature : IMappable
+    public abstract class Creature : Animals
     {
         private string name = "Unknown";
 
+        public abstract string Symbol { get; }
         public string Name
         {
             get => name;
@@ -22,9 +24,9 @@ namespace Simulator
         }
 
         public Map CurrentMap { get; private set; }
-        public Point Position { get; private set; }
+        public Point Position { get; set; }
 
-        public Creature(string name, int level = 1)
+        public Creature(string name, int level = 1) 
         {
             Name = name;
             Level = level;
@@ -32,9 +34,10 @@ namespace Simulator
 
         public Creature() { }
 
-        public abstract int Power { get; }
-        public abstract string Info { get; }
-        public abstract string Greeting();
+        public  int Power { get; }
+        new public string Info { get; }
+        //new public string Greeting();
+
 
         public void Upgrade()
         {
@@ -51,15 +54,10 @@ namespace Simulator
             CurrentMap.Add(this, position);
         }
 
-        public void Go(Direction direction)
-        {
-            if (CurrentMap == null)
-                throw new InvalidOperationException("Creature is not assigned to a map.");
 
-            var nextPosition = CurrentMap.Next(Position, direction);
-            CurrentMap.Move(Position, nextPosition, this);
-            Position = nextPosition;
-        }
+        // Ogólny sposób poruszania się
+        public abstract void Move(Direction direction);
+        
 
         public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
 
