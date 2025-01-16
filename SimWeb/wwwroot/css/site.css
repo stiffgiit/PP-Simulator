@@ -1,6 +1,6 @@
 body {
-    background-color: darkgray;
-    margin: 0px;
+    background-image: url(castle2.png);
+   
 }
 
 main {
@@ -15,7 +15,6 @@ main {
 
 header {
     display: flex;
-    background-image: linear-gradient(#262626, #0f0f0f);
     align-items: center;
     width: 100%;
 }

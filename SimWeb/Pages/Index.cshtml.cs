@@ -27,7 +27,7 @@ public class IndexModel : PageModel
             new(6, 5),
             new(5, 5)
             ];
-        string moves = "lrlluuddrludllr";
+        string moves = "rrlluuddrludllr";
         Simulation = new(map, creatures, points, moves);
         SimHistory = new SimulationHistory(Simulation);
         CurrentLog = SimHistory.TurnLogs[Turn];
