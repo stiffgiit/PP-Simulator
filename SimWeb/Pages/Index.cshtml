@@ -1,0 +1,62 @@
+﻿@page
+@model IndexModel
+@using SimWeb.Pages
+@using Simulator
+@{
+    ViewData["Title"] = "Symulacja";
+}
+<div class="control-panel">
+    <form asp-page="/Index" method="post">
+        <button type="submit" asp-page-handler="PrevTurn">←</button>
+    </form>
+    <h1>Tura: @Model.Turn</h1>
+    <form asp-page="/Index" method="post">
+        <button type="submit" asp-page-handler="NextTurn">→</button>
+    </form>
+</div>
+<div class="log-container">
+    @{
+        if (Model.Turn != 0)
+        {
+            var log = $"{Model.CurrentLog.Mappable} goes {Model.CurrentLog.Move}";
+            <p>@log</p>
+        }
+        else
+        {
+            var log = "Pozycje startowe";
+            <p>@log</p>
+        }
+    }
+</div>
+<div class="container">
+    <div class="map-container" style="grid-template-columns: repeat(@Model.SizeX, 1fr); grid-template-rows: repeat(@Model.SizeY, 1fr);">
+        @for (int row = 0; row < Model.SizeY; row++)
+        {
+            for (int col = 0; col < Model.SizeX; col++)
+            {
+                var cords = new Point(col, row);
+                if (Model.CurrentLog.Symbols.ContainsKey(cords))
+                {
+                    var path = "";
+                    if (Model.CurrentLog.Symbols[cords] == 'B')
+                    {
+                        path = $"creatures/BB.png";
+                    }
+                    else if (Model.CurrentLog.Symbols[cords] == 'X')
+                    {
+                        path = $"creatures/All.png";
+                    }
+                    else
+                    {
+                        path = $"creatures/{Model.CurrentLog.Symbols[cords]}.png";
+                    }
+                    <div class="grid-item"><img src="@path" alt="@Model.CurrentLog.Symbols[cords]" /></div>
+                }
+                else
+                {
+                    <div class="grid-item"></div>
+                }
+            }
+        }
+    </div>
+</div>

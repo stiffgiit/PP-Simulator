@@ -3,83 +3,116 @@ using Simulator;
 
 public class Simulation
 {
+    /// <summary>
+    /// Simulation's map.
+    /// </summary>
     public Map Map { get; }
-    public List<Creature> Creatures { get; }
+
+    /// <summary>
+    /// Creatures moving on the map.
+    /// </summary>
+    public List<IMappable> Creatures { get; }
+
+    /// <summary>
+    /// Starting positions of creatures.
+    /// </summary>
     public List<Point> Positions { get; }
+
+    /// <summary>
+    /// Cyclic list of creatures moves. 
+    /// Bad moves are ignored - use DirectionParser.
+    /// First move is for first creature, second for second and so on.
+    /// When all creatures make moves, 
+    /// next move is again for first creature and so on.
+    /// </summary>
     public string Moves { get; }
 
-    private int _currentTurnIndex = 0;
-    private int _totalMovesMade = 0;
-
+    /// <summary>
+    /// Has all moves been done?
+    /// </summary>
     public bool Finished { get; private set; } = false;
 
-    public Creature CurrentCreature
+    /// <summary>
+    /// Creature which will be moving current turn.
+    /// </summary>
+    public IMappable CurrentCreature
     {
         get
         {
-            if (Finished) throw new InvalidOperationException("Simulation is finished.");
-            return Creatures[_currentTurnIndex];
+            if (Finished) throw new InvalidOperationException("Blad! - Symulacja sie zakonczyla.");
+            return Creatures[currentCreatureIndex];
         }
     }
 
+    /// <summary>
+    /// Lowercase name of direction which will be used in current turn.
+    /// </summary>
     public string CurrentMoveName
     {
         get
         {
-            if (Finished) throw new InvalidOperationException("Simulation is finished.");
-            int moveIndex = _totalMovesMade % Moves.Length;
-            return Moves[moveIndex].ToString().ToLower();
+            if (Finished) throw new InvalidOperationException("Blad! - Symulacja sie zakonczyla.");
+            return DirectionParser.Parse(Moves[currentMoveIndex].ToString())[0].ToString().ToLower();
         }
     }
 
-    public Simulation(Map map, List<Creature> creatures, List<Point> positions, string moves)
+    private int currentCreatureIndex = 0;
+    private int currentMoveIndex = 0;
+
+    /// <summary>
+    /// Simulation constructor.
+    /// Throw errors:
+    /// if creatures' list is empty,
+    /// if number of creatures differs from 
+    /// number of starting positions.
+    /// </summary>
+    public Simulation(Map map, List<IMappable> creatures,
+        List<Point> positions, string moves)
     {
-        if (creatures == null || !creatures.Any())
-            throw new ArgumentException("Creatures list cannot be empty.", nameof(creatures));
-        if (positions == null || creatures.Count != positions.Count)
-            throw new ArgumentException("Number of creatures must match the number of starting positions.", nameof(positions));
-        if (string.IsNullOrEmpty(moves))
-            throw new ArgumentException("Moves cannot be null or empty.", nameof(moves));
-
-        Map = map ?? throw new ArgumentNullException(nameof(map));
-        Creatures = new List<Creature>(creatures);
-        Positions = new List<Point>(positions);
-        Moves = moves.ToLower();
-
-        for (int i = 0; i < Creatures.Count; i++)
+        if (creatures.Count == 0)
         {
-            Creatures[i].SetMap(map, positions[i]);
-            Map.Add(Creatures[i], positions[i]);
+            throw new ArgumentException("Blad! - Lista stworow nie moze byc pusta.");
         }
+
+        if (positions.Count != creatures.Count)
+        {
+            throw new ArgumentException("Blad! - Lista pozycji startowych musi byc rowna liscie stworow.");
+        }
+
+        Map = map;
+        Creatures = creatures;
+        Positions = positions;
+        Moves = moves;
+
+        for (int i = 0; i < creatures.Count; i++)
+        {
+            Creatures[i].AssignMap(map, positions[i]);
+        }
+
     }
 
+    /// <summary>
+    /// Makes one move of current creature in current direction.
+    /// Throw error if simulation is finished.
+    /// </summary>
     public void Turn()
     {
-        if (Finished)
-            throw new InvalidOperationException("Cannot make a turn. Simulation is finished.");
+        if (Finished) throw new InvalidOperationException("Blad! - Symulacja sie zakonczyla.");
 
-        Direction? direction = DirectionParser.Parse(CurrentMoveName).FirstOrDefault();
-        if (direction == null)
-        {
-            throw new InvalidOperationException("Invalid direction parsed.");
-        }
+        IMappable creature = CurrentCreature;
+        Direction direction = DirectionParser.Parse(Moves)[currentMoveIndex];
+        creature.Go(direction);
 
-        var creature = CurrentCreature;
-        var currentPosition = creature.Position;
-
-        
-        creature.Move(direction.Value);
-
-        Map.Remove(creature, currentPosition);
-        Map.Add(creature, creature.Position);
-
-        _totalMovesMade++;
-        _currentTurnIndex = (_currentTurnIndex + 1) % Creatures.Count;
-
-        
-        if (_totalMovesMade >= Moves.Length * Creatures.Count)
+        currentMoveIndex++;
+        if (currentMoveIndex >= Moves.Length)
         {
             Finished = true;
+        }
+
+        currentCreatureIndex++;
+        if (currentCreatureIndex >= Creatures.Count)
+        {
+            currentCreatureIndex = 0;
         }
     }
 }

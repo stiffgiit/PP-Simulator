@@ -1,92 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Simulator.Maps;
 using Simulator;
-using Simulator.Maps;
 
-namespace SimConsole
+namespace SimConsole;
+
+public class MapVisualizer
 {
-    public class MapVisualizer
+    private readonly Map _map;
+
+    public MapVisualizer(Map map)
     {
-        public Map Map { get; }
+        _map = map;
+    }
 
-        // Stałe dla rysowania mapy
-        public const char
-            Horizontal = '\u2500',
-            Vertical = '\u2502',
-            Cross = '\u253C',
-            TopLeft = '\u250C',
-            TopRight = '\u2510',
-            BottomLeft = '\u2514',
-            BottomRight = '\u2518',
-            TopMid = '\u252C',
-            BottomMid = '\u2534',
-            MidLeft = '\u251C',
-            MidRight = '\u2524';
-
-        public MapVisualizer(Map map)
+    public void Draw()
+    {
+        Console.Write(Box.TopLeft);
+        for (int i = 0; i < _map.SizeX - 1; i++)
         {
-            Map = map ?? throw new ArgumentNullException(nameof(map));
+            Console.Write($"{Box.Horizontal}{Box.TopMid}");
         }
+        Console.WriteLine($"{Box.Horizontal}{Box.TopRight}");
 
-        public void Draw(List<Creature> creatures, List<Point> points)
+        for (int row = 0; row < _map.SizeY; row++)
         {
-            Console.Clear();
-
-            for (int y = 0; y < Map.SizeY; y++)
+            Console.Write(Box.Vertical);
+            for (int col = 0; col < _map.SizeX; col++)
             {
-                Console.Write(TopLeft);
-                for (int x = 0; x < Map.SizeX - 1; x++)
-                    Console.Write(Horizontal + "" + Horizontal);
-                Console.WriteLine(TopRight);
+                var objectsAtPosition = _map.At(col, row);
 
-                for (int x = 0; x < Map.SizeX; x++)
+                if (objectsAtPosition.Count > 0)
                 {
-                    Console.Write(Vertical);
+                    var symbol = objectsAtPosition[0] is IMappable mappable
+                        ? mappable.Symbol
+                        : '?';
 
-                    var creaturesAtPosition = Map.At(x, y); // Pobieranie stworów w danym punkcie
-                    if (creaturesAtPosition.Count > 1)
-                        Console.Write("X"); // Jeśli jest więcej niż jedno stworzenie, wyświetl "X"
-                    else if (creaturesAtPosition.Count == 1)
-                    {
-                        var creature = creaturesAtPosition[0];
-                        Console.Write(creature.Symbol); // Używamy symbolu stworzenia
-                    }
-                    else
-                        Console.Write(" "); // Pusta przestrzeń
-                }
-
-                Console.WriteLine(Vertical);
-
-                if (y == Map.SizeY - 1)
-                {
-                    Console.Write(BottomLeft);
-                    for (int x = 0; x < Map.SizeX - 1; x++)
-                        Console.Write(Horizontal + "" + Horizontal);
-                    Console.WriteLine(BottomRight);
+                    Console.Write($"{symbol}{Box.Vertical}");
                 }
                 else
                 {
-                    Console.Write(MidLeft);
-                    for (int x = 0; x < Map.SizeX - 1; x++)
-                        Console.Write(Horizontal + "" + Horizontal);
-                    Console.WriteLine(MidRight);
+                    Console.Write($" {Box.Vertical}");
                 }
             }
-        }
+            Console.WriteLine();
 
-
-
-        private void DrawHorizontalBorder(char left, char middle, char right)
-        {
-            Console.Write(left);
-            for (int x = 0; x < Map.SizeX + 1; x++)
+            if (row < _map.SizeY - 1)
             {
-                Console.Write(Horizontal);
-                Console.Write(Horizontal);
-                Console.Write(middle);
+                Console.Write(Box.MidLeft);
+                for (int col = 0; col < _map.SizeX - 1; col++)
+                {
+                    Console.Write($"{Box.Horizontal}{Box.Cross}");
+                }
+                Console.WriteLine($"{Box.Horizontal}{Box.MidRight}");
             }
-            Console.Write(Horizontal);
-            Console.WriteLine(Horizontal + "" + right);
         }
+
+        Console.Write(Box.BottomLeft);
+        for (int i = 0; i < _map.SizeX - 1; i++)
+        {
+            Console.Write($"{Box.Horizontal}{Box.BottomMid}");
+        }
+        Console.WriteLine($"{Box.Horizontal}{Box.BottomRight}");
     }
 }

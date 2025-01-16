@@ -1,55 +1,54 @@
 ﻿using Simulator.Maps;
-using Simulator;
-using System;
 
-namespace Simulator
+namespace Simulator;
+
+public class Animals : IMappable
 {
-
-    
-    public class Animals : IMappable
+    private string description = "No description.";
+    public string Description
     {
-        private string description = "Unknown";
-        public uint Size { get; set; } = 3;
+        get { return description; }
+        init { description = Validator.Shortener(value, 3, 15, '#'); }
+    }
 
-        public Map CurrentMap { get; private set; }
-        public Point Position { get; set; }
+    public uint Size { get; set; } = 3;
+    public Map? CurrentMap { get; private set; } = null;
+    public Point CreaturePos { get; set; }
+    public virtual char Symbol => 'A';
 
-        public string Description
+    public virtual string Info => $"{Description} <{Size}>";
+
+    public void AssignMap(Map map, Point point)
+    {
+        if (CurrentMap != null)
         {
-            get => description;
-            init => description = Validator.Shortener(value, 3, 15, '#');
+            throw new InvalidOperationException("Blad! - Mapa byla juz wczesniej przydzielona.");
         }
+        CurrentMap = map;
+        CreaturePos = point;
+        CurrentMap.Add(this, point);
+    }
 
-        public string Info => $"{FormatName(Description)} <{Size}>";
+    public Point GetPos()
+    {
+        return CreaturePos;
+    }
 
-        
-        public string Symbol => "A";
-
-        
-        public void SetMap(Map map, Point position)
+    public virtual string Go(Direction direction)
+    {
+        if (CurrentMap != null)
         {
-            CurrentMap = map ?? throw new ArgumentNullException(nameof(map));
-            Position = position;
-            CurrentMap.Add(this, position);  
+            var newPos = CurrentMap.Next(CreaturePos, direction);
+            CurrentMap.Move(this, CreaturePos, newPos);
+            CreaturePos = newPos;
+
+            return $"{direction.ToString().ToLower()}";
         }
-
-        
-        public void WalkDiagonally(Direction direction)
+        else
         {
-            if (CurrentMap == null)
-                throw new InvalidOperationException("Animal is not assigned to a map.");
-
-            var nextPosition = CurrentMap.NextDiagonal(Position, direction); 
-            CurrentMap.Move(Position, nextPosition, this);
-            Position = nextPosition;
-        }
-
-        public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
-
-        protected string FormatName(string name)
-        {
-            if (string.IsNullOrEmpty(name)) return name;
-            return char.ToUpper(name.Trim()[0]) + name.Trim().Substring(1).ToLower();
+            throw new InvalidOperationException("Blad! - Zwierze nie ma jeszcze przydzielonej mapy.");
         }
     }
+
+    public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
 }

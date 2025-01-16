@@ -1,47 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Simulator.Maps;
 
-namespace Simulator.Maps
+/// <summary>
+/// Map of points.
+/// </summary>
+public abstract class Map
 {
-    public abstract class Map
+    public int SizeX { get; set; }
+    public int SizeY { get; set; }
+
+    public readonly Rectangle _map;
+
+    protected Map(int sizeX, int sizeY)
     {
-        public int SizeX { get; set; }
-        public int SizeY { get; set; }
+        if (sizeX < 5 || sizeY < 5)
+            throw new ArgumentOutOfRangeException("Rozmiar mapy musi mieścić się w granicach od 5 do 20 punktow!");
 
-        protected Map(int sizeX, int sizeY)
-        {
-            if (sizeX < 5 || sizeY < 5)
-                throw new ArgumentOutOfRangeException("size", "Map size must be between 5 and 20.");
-
-            SizeX = sizeX;
-            SizeY = sizeY;
-        }
-
-        public abstract bool Exist(Point p);
-        public abstract Point Next(Point p, Direction d);
-        public abstract Point NextDiagonal(Point p, Direction d);
-        public abstract void Add(IMappable obj, Point position);  
-        public abstract void Remove(IMappable obj, Point position);  
-        public abstract void Move(Point from, Point to, IMappable obj);  
-        public abstract List<IMappable> At(Point position);  
-        public abstract List<IMappable> At(int x, int y);
-
-        public virtual void Draw()
-        {
-            for (int y = 0; y < SizeY; y++)
-            {
-                for (int x = 0; x < SizeX; x++)
-                {
-                    var entities = At(x, y);
-                    if (entities.Count == 1)
-                        Console.Write(entities[0].Symbol); // Symbol pojedynczego obiektu
-                    else if (entities.Count > 1)
-                        Console.Write("X"); // Więcej niż jeden obiekt
-                    else
-                        Console.Write("."); // Puste pole
-                }
-                Console.WriteLine();
-            }
-        }
+        SizeX = sizeX;
+        SizeY = sizeY;
+        _map = new Rectangle(0, 0, SizeX - 1, SizeY - 1);
     }
+    /// <summary>
+    /// Check if give point belongs to the map.
+    /// </summary>
+    /// <param name="p">Point to check.</param>
+    /// <returns></returns>
+    public bool Exist(Point point)
+    {
+        return _map.Contains(point);
+    }
+
+    /// <summary>
+    /// Next position to the point in a given direction.
+    /// </summary>
+    /// <param name="p">Starting point.</param>
+    /// <param name="d">Direction.</param>
+    /// <returns>Next point.</returns>
+    public abstract Point Next(Point p, Direction d);
+
+    /// <summary>
+    /// Next diagonal position to the point in a given direction 
+    /// rotated 45 degrees clockwise.
+    /// </summary>
+    /// <param name="p">Starting point.</param>
+    /// <param name="d">Direction.</param>
+    /// <returns>Next point.</returns>
+    public abstract Point NextDiagonal(Point p, Direction d);
+
+    public abstract void Add(IMappable creature, Point point);
+
+    public void Move(IMappable creature, Point pos, Point nextpos)
+    {
+        Remove(creature, pos);
+        Add(creature, nextpos);
+    }
+
+    public abstract void Remove(IMappable creature, Point point);
+    public abstract List<IMappable> At(Point point);
+    public abstract List<IMappable> At(int x, int y);
 }

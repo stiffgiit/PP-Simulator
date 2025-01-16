@@ -1,10 +1,10 @@
-﻿using Simulator.Maps;
-using Simulator;
+﻿namespace Simulator.Maps;
 
 public interface IMappable
 {
-    Map CurrentMap { get; }
-    Point Position { get; }
-    void SetMap(Map map, Point position);
-    string Symbol { get; }
+    char Symbol { get; }
+    void AssignMap(Map map, Point point);
+    string Go(Direction direction);
+    string ToString();
+    Point GetPos();
 }

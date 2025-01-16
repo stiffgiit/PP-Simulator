@@ -1,70 +1,83 @@
 ﻿using Simulator.Maps;
-using Simulator;
 using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 
-namespace Simulator
+namespace Simulator;
+
+public abstract class Creature : IMappable
 {
-    public abstract class Creature : Animals
+    private string name = "Unknown";
+    private int level = 1;
+
+    public abstract int Power { get; }
+    public virtual char Symbol => 'C';
+    public Map? CurrentMap { get; private set; } = null;
+    public Point CreaturePos { get; private set; }
+
+    public string Name
     {
-        private string name = "Unknown";
+        get { return name; }
+        init { name = Validator.Shortener(value, 3, 25, '#'); }
+    }
 
-        public abstract string Symbol { get; }
-        public string Name
+    public int Level
+    {
+        get { return level; }
+        init { level = Validator.Limiter(value, 1, 10); }
+    }
+
+    public Creature(string name, int level = 1)
+    {
+        Name = name;
+        Level = level;
+    }
+
+    public Creature() { }
+
+    public abstract string Greeting();
+
+    public abstract string Info { get; }
+
+    public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
+
+    public void Upgrade()
+    {
+        if (level < 10)
         {
-            get => name;
-            init => name = Validator.Shortener(FormatName(value), 3, 25, '#');
+            level++;
         }
+    }
 
-        private int level = 1;
-
-        public int Level
+    public void AssignMap(Map map, Point point)
+    {
+        if (CurrentMap != null)
         {
-            get => level;
-            init => level = Validator.Limiter(value, 1, 10);
+            throw new InvalidOperationException("Blad! - Mapa byla juz wczesniej przydzielona.");
         }
+        CurrentMap = map;
+        CreaturePos = point;
+        CurrentMap.Add(this, point);
+    }
 
-        public Map CurrentMap { get; private set; }
-        public Point Position { get; set; }
-
-        public Creature(string name, int level = 1) 
+    public string Go(Direction direction)
+    {
+        if (CurrentMap != null)
         {
-            Name = name;
-            Level = level;
+            var newPos = CurrentMap.Next(CreaturePos, direction);
+            CurrentMap.Move(this, CreaturePos, newPos);
+            CreaturePos = newPos;
+            return $"{direction.ToString().ToLower()}";
         }
-
-        public Creature() { }
-
-        public  int Power { get; }
-        new public string Info { get; }
-        //new public string Greeting();
-
-
-        public void Upgrade()
+        else
         {
-            if (Level < 10)
-            {
-                level++;
-            }
+            throw new InvalidOperationException("Blad! - Stwor nie ma jeszcze przydzielonej mapy.");
         }
+    }
 
-        public void SetMap(Map map, Point position)
-        {
-            CurrentMap = map ?? throw new ArgumentNullException(nameof(map));
-            Position = position;
-            CurrentMap.Add(this, position);
-        }
-
-
-        // Ogólny sposób poruszania się
-        public abstract void Move(Direction direction);
-        
-
-        public override string ToString() => $"{GetType().Name.ToUpper()}: {Info}";
-
-        protected string FormatName(string name)
-        {
-            if (string.IsNullOrEmpty(name)) return name;
-            return char.ToUpper(name[0]) + name.Substring(1).ToLower();
-        }
+    public Point GetPos()
+    {
+        return CreaturePos;
     }
 }

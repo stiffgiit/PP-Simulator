@@ -1,38 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Simulator
+﻿namespace Simulator;
+public static class DirectionParser
 {
-    public static class DirectionParser
+    public static Direction[] Parse(string directions)
     {
-        public static List<Direction> Parse(string input)
+        var parsed = new List<Direction>();
+        for (int i = 0; i < directions.Length; i++)
         {
-            var directions = new List<Direction>();
-
-            foreach (char c in input.ToUpper())
+            if (directions[i] == 'U' || directions[i] == 'u')
             {
-                switch (c)
-                {
-                    case 'U':
-                        directions.Add(Direction.Up);
-                        break;
-                    case 'R':
-                        directions.Add(Direction.Right);
-                        break;
-                    case 'D':
-                        directions.Add(Direction.Down);
-                        break;
-                    case 'L':
-                        directions.Add(Direction.Left);
-                        break;
-                }
+                parsed.Add(Direction.Up);
             }
-
-            return directions;
+            else if (directions[i] == 'R' || directions[i] == 'r')
+            {
+                parsed.Add(Direction.Right);
+            }
+            else if (directions[i] == 'D' || directions[i] == 'd')
+            {
+                parsed.Add(Direction.Down);
+            }
+            else if (directions[i] == 'L' || directions[i] == 'l')
+            {
+                parsed.Add(Direction.Left);
+            }
         }
 
+        return parsed.ToArray();
     }
 }

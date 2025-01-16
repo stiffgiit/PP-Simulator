@@ -1,69 +1,33 @@
-﻿using Simulator.Maps;
-using System;
-using System.Xml.Linq;
+﻿namespace Simulator;
 
-namespace Simulator
+public class Birds : Animals
 {
-    public class Birds : Creature
+    public bool CanFly = true;
+    public override char Symbol => CanFly ? 'B' : 'b';
+
+    public override string Info => $"{Description} (fly{(CanFly ? "+" : "-")}) <{Size}>";
+    public override string Go(Direction direction)
     {
-        public bool CanFly { get; set; } = true;
-
-        public Birds(string description, uint size = 3)
-        {
-            Description = description; // Inicjalizacja opisu ptaka
-            Size = size;
-        }
-
-        public override void Move(Direction direction)
+        if (CurrentMap != null)
         {
             if (CanFly)
             {
-                // Logika ruchu ptaka, jeśli może latać
-                Console.WriteLine($"{Name} lata w kierunku {direction}");
-                // Przemieszczanie się na mapie o 2 pola
+                var newPos = CurrentMap.Next(CreaturePos, direction);
+                newPos = CurrentMap.Next(newPos, direction);
+                CurrentMap.Move(this, CreaturePos, newPos);
+                CreaturePos = newPos;
             }
             else
             {
-                // Logika ruchu ptaka, jeśli nie może latać (np. chodzenie po skosie)
-                Console.WriteLine($"{Name} chodzi w kierunku {direction}");
+                var newPos = CurrentMap.NextDiagonal(CreaturePos, direction);
+                CurrentMap.Move(this, CreaturePos, newPos);
+                CreaturePos = newPos;
             }
+            return $"{direction.ToString().ToLower()}";
         }
-
-        public override string Symbol => CanFly ? "B" : "b";
-
-        // Metoda latania dla ptaków
-        public void Fly(Direction direction)
+        else
         {
-            if (!CanFly)
-                throw new InvalidOperationException("This bird cannot fly.");
-
-            if (CurrentMap == null)
-                throw new InvalidOperationException("Bird is not assigned to a map.");
-
-            // Wykonaj ruch o 2 pola w zadanym kierunku
-            var nextPosition = CurrentMap.Next(Position, direction);
-            nextPosition = CurrentMap.Next(nextPosition, direction); // Przemieszczenie o kolejne pole
-
-            CurrentMap.Move(Position, nextPosition, this);
-            Position = nextPosition;
-        }
-
-        // Metoda do chodzenia po skosie dla ptaków nielotnych
-        public void WalkDiagonally(Direction direction)
-        {
-            if (!CanFly)
-            {
-                if (CurrentMap == null)
-                    throw new InvalidOperationException("Bird is not assigned to a map.");
-
-                var nextPosition = CurrentMap.NextDiagonal(Position, direction);
-                CurrentMap.Move(Position, nextPosition, this);
-                Position = nextPosition;
-            }
-            else
-            {
-                throw new InvalidOperationException("This bird can fly, so it cannot walk diagonally.");
-            }
+            throw new InvalidOperationException("Blad! - Zwierze nie ma jeszcze przydzielonej mapy.");
         }
     }
 }
